@@ -133,6 +133,8 @@ def scrape_flipkart():
 
 
 def run_check():
+    print("TOKEN:", TELEGRAM_BOT_TOKEN)
+    print("CHAT:", TELEGRAM_CHAT_ID)
     print(f"\n📊 SONOS ERA 300 DEAL REPORT — {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print("=" * 60)
 
