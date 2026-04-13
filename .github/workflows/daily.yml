@@ -2,12 +2,16 @@ name: Daily Price Check
 
 on:
   schedule:
-    - cron: '30 3 * * *'  # 9:00 AM India time
+    - cron: '30 3 * * *'  # 9:00 AM IST
   workflow_dispatch:
 
 jobs:
   run-script:
     runs-on: ubuntu-latest
+
+    env:
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
 
     steps:
       - name: Checkout code
@@ -19,8 +23,7 @@ jobs:
           python-version: '3.10'
 
       - name: Install dependencies
-        run: |
-          pip install requests beautifulsoup4
+        run: pip install requests beautifulsoup4
 
       - name: Run script
         run: python main.py
