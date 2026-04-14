@@ -67,33 +67,27 @@ def is_real_speaker(title, price, link=""):
 
 
 def scrape_amazon():
-    url = "https://www.amazon.in/s?k=sonos+era+300+speaker"
+    url = "https://www.amazon.in/Sonos-Era-300-Wireless-Speaker/dp/B0CKL227XY?th=1"
     results = []
+
     try:
         response = requests.get(url, headers=HEADERS, timeout=10)
         soup = BeautifulSoup(response.text, "html.parser")
-        items = soup.find_all("div", {"data-component-type": "s-search-result"})
-        for item in items[:15]:
-            try:
-                title = item.h2.text.strip()
-                price_tag = item.find("span", {"class": "a-price-whole"})
-                if not price_tag:
-                    continue
-                price_num = int(price_tag.text.replace(",", "").replace(".", "").strip())
 
-                link_tag = item.find("a", {"class": lambda c: c and "a-link-normal" in c}, href=True)
-                if not link_tag:
-                    link_tag = item.find("a", href=lambda h: h and "/dp/" in h)
-                link = "https://www.amazon.in" + link_tag["href"].split("?")[0] if link_tag else "N/A"
+        title_tag = soup.find("span", {"id": "productTitle"})
+        price_tag = soup.find("span", {"class": "a-price-whole"})
 
-                if not is_real_speaker(title, price_num, link):
-                    continue
+        if not title_tag or not price_tag:
+            return []
 
-                results.append(("Amazon", title, price_num, link))
-            except Exception:
-                continue
+        title = title_tag.text.strip()
+        price = int(price_tag.text.replace(",", "").strip())
+
+        results.append(("Amazon", title, price, url))
+
     except Exception as e:
         print(f"❌ Amazon scrape failed: {e}")
+
     return results
 
 
@@ -138,7 +132,7 @@ def run_check():
     print(f"\n📊 SONOS ERA 300 DEAL REPORT — {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print("=" * 60)
 
-    all_results = scrape_amazon() + scrape_flipkart()
+    all_results = scrape_amazon()
 
     if not all_results:
         print("❌ No Sonos Era 300 speaker listings found (may have been blocked or out of stock)")
